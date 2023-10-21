@@ -1,7 +1,7 @@
 //data for courses
 
 const coursesData = {
-    term1: [
+    'Term 1': [
         {
             courseName: 'Project Management 1',
             courseCode: 'PR111',
@@ -31,7 +31,7 @@ const coursesData = {
             tuitionFee: '$800.00'
         }
     ],
-    term2: [
+    'Term 2': [
         {
             courseName: 'Networking',
             courseCode: 'NET222',
@@ -54,7 +54,7 @@ const coursesData = {
             tuitionFee: '$800.00'
         }
     ],
-    term3: [
+    'Term 3': [
         {
             courseName: 'Advanced Project Management 1',
             courseCode: 'PR333',
@@ -84,7 +84,7 @@ const coursesData = {
             tuitionFee: '$800.00'
         }
     ],
-    term4: [
+    'Term 4': [
         {
             courseName: 'Advanced Networking',
             courseCode: 'NET444',

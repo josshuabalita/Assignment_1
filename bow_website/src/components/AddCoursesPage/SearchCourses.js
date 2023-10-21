@@ -20,7 +20,7 @@ const SearchCourses = ({ onSearchChange, searchResults }) => {
             <br />
             <span>Tuition Fee: {result.course.tuitionFee}</span>
             <br />
-            <span>Term: {result.term}</span> {/* Display the term here */}
+            <span>Term: {result.term}</span> 
           </li>
         ))}
       </ul>

@@ -1,62 +1,102 @@
-import React, { useState } from 'react';
+import React, { Component } from 'react';
 import TermCourses from './TermCourses';
 import coursesData from './coursesData';
 import TermSelection from './TermSelection';
 import SearchCourses from './SearchCourses';
-import RegisteredCourses from './RegisteredCourses';
+import RegisteredCourses from './RegisterdCourses';
 
-const AddCoursePage = () => {
-  const terms = Object.keys(coursesData);
-  const [selectedTerm, setSelectedTerm] = useState('');
-  const [searchTerm, setSearchTerm] = useState('');
-  const [registeredCourses, setRegisteredCourses] = useState([]);
-  const [searchResults, setSearchResults] = useState([]);
+class CourseRegistrationPage extends Component {
+  state = {
+    terms: Object.keys(coursesData),
+    selectedTerm: '',
+    searchTerm: '',
+    registeredCourses: [],
+    searchResults: [],
+  };
 
-  const handleSearchChange = (newSearchTerm) => {
-    setSearchTerm(newSearchTerm);
+  handleRemoveCourse = (courseToRemove) => {
+    this.setState((prevState) => ({
+      registeredCourses: prevState.registeredCourses.filter(
+        (course) => course !== courseToRemove
+      ),
+    }));
+  };
+
+  handleSearchChange = (newSearchTerm) => {
+    this.setState({ searchTerm: newSearchTerm });
 
     if (newSearchTerm === '') {
-      setSearchResults([]); // Reset search results when the search bar is empty
+      this.setState({ searchResults: [] });
       return;
     }
 
-    // Filter courses and determine the matching term for search results
-    const filteredResults = terms.flatMap((term) => {
+    const filteredResults = this.state.terms.flatMap((term) => {
       const filteredCourses = coursesData[term].filter((course) =>
         course.courseCode.toLowerCase().includes(newSearchTerm.toLowerCase())
       );
       return filteredCourses.map((course) => ({ course, term }));
     });
-    setSearchResults(filteredResults);
+    this.setState({ searchResults: filteredResults });
   };
 
-  const handleTermChange = (term) => {
-    setSelectedTerm(term);
+  handleTermChange = (term) => {
+    this.setState({ selectedTerm: term });
   };
 
-  const handleAddCourse = (course) => {
-    setRegisteredCourses((prevCourses) => [...prevCourses, course]);
+  handleAddCourse = (course) => {
+    const isAlreadyRegistered = this.state.registeredCourses.some(
+      (regCourse) => regCourse.course.courseCode === course.courseCode && regCourse.term === this.state.selectedTerm
+    );
+
+    if (isAlreadyRegistered) {
+      const existingCourse = this.state.registeredCourses.find(
+        (regCourse) => regCourse.course.courseCode === course.courseCode && regCourse.term === this.state.selectedTerm
+      );
+
+      if (existingCourse.status === 'Failed') {
+        this.setState((prevState) => ({
+          registeredCourses: prevState.registeredCourses.map((regCourse) =>
+            regCourse.course.courseCode === course.courseCode && regCourse.term === this.state.selectedTerm
+              ? { ...regCourse, status: 'Registered' }
+              : regCourse
+          ),
+        }));
+      } else {
+        alert('You are already registered for this course in the current term.');
+      }
+    } else {
+      this.setState((prevState) => ({
+        registeredCourses: [
+          ...prevState.registeredCourses,
+          { course, term: this.state.selectedTerm, status: 'Registered' },
+        ],
+      }));
+    }
   };
 
-  const handleRemoveCourse = (course) => {
-    setRegisteredCourses((prevCourses) => prevCourses.filter((c) => c !== course));
-  };
+  render() {
+    const filteredCourses = this.state.selectedTerm ? coursesData[this.state.selectedTerm] : [];
 
-  const filteredCourses = selectedTerm ? coursesData[selectedTerm] : [];
-
-  return (
-    <div>
-      <h1>Add Courses</h1>
-      <SearchCourses onSearchChange={handleSearchChange} searchResults={searchResults} />
-      <TermSelection terms={terms} selectedTerm={selectedTerm} onTermChange={handleTermChange} />
-      <TermCourses term={selectedTerm} courses={filteredCourses} onAddCourse={handleAddCourse} termSelected={!!selectedTerm} />
-
-      <RegisteredCourses
-        registeredCourses={registeredCourses}
-        onRemoveCourse={handleRemoveCourse}
-      />
-    </div>
-  );
+    return (
+      <div>
+        <h1>Add Courses</h1>
+        <SearchCourses onSearchChange={this.handleSearchChange} searchResults={this.state.searchResults} />
+        <TermSelection terms={this.state.terms} selectedTerm={this.state.selectedTerm} onTermChange={this.handleTermChange} />
+        <TermCourses
+          term={this.state.selectedTerm}
+          courses={filteredCourses}
+          onAddCourse={this.handleAddCourse}
+          termSelected={!!this.state.selectedTerm}
+        />
+        <br />
+        <p>Registered Courses is just an example showing registered classes, will remove and update to another page once back-end is connected!</p>
+        <RegisteredCourses
+          registeredCourses={this.state.registeredCourses}
+          onRemoveCourse={this.handleRemoveCourse}
+        />
+      </div>
+    );
+  }
 }
 
-export default AddCoursePage;
+export default CourseRegistrationPage;

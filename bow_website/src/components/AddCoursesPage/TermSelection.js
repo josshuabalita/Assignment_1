@@ -5,7 +5,7 @@ const TermSelection = ({ terms, selectedTerm, onTermChange }) => {
     <div>
       <label>Select Term:</label>
       <select value={selectedTerm} onChange={(e) => onTermChange(e.target.value)}>
-        <option value="">Term</option>
+        <option value="">Select a term</option>
         {terms.map((term, index) => (
           <option key={index} value={term}>
             {term}
