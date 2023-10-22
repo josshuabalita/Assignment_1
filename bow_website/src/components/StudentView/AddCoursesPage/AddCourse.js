@@ -12,6 +12,7 @@ class CourseRegistrationPage extends Component {
     searchTerm: '',
     registeredCourses: [],
     searchResults: [],
+    registrationMessage: '', 
   };
 
   handleRemoveCourse = (courseToRemove) => {
@@ -45,24 +46,33 @@ class CourseRegistrationPage extends Component {
 
   handleAddCourse = (course) => {
     const isAlreadyRegistered = this.state.registeredCourses.some(
-      (regCourse) => regCourse.course.courseCode === course.courseCode && regCourse.term === this.state.selectedTerm
+      (regCourse) =>
+        regCourse.course.courseCode === course.courseCode &&
+        regCourse.term === this.state.selectedTerm
     );
 
     if (isAlreadyRegistered) {
       const existingCourse = this.state.registeredCourses.find(
-        (regCourse) => regCourse.course.courseCode === course.courseCode && regCourse.term === this.state.selectedTerm
+        (regCourse) =>
+          regCourse.course.courseCode === course.courseCode &&
+          regCourse.term === this.state.selectedTerm
       );
 
       if (existingCourse.status === 'Failed') {
         this.setState((prevState) => ({
           registeredCourses: prevState.registeredCourses.map((regCourse) =>
-            regCourse.course.courseCode === course.courseCode && regCourse.term === this.state.selectedTerm
+            regCourse.course.courseCode === course.courseCode &&
+            regCourse.term === this.state.selectedTerm
               ? { ...regCourse, status: 'Registered' }
               : regCourse
           ),
+          registrationMessage: '', 
         }));
       } else {
-        alert('You are already registered for this course in the current term.');
+        this.setState({
+          registrationMessage:
+            'You are already registered for this course in the current term.',
+        });
       }
     } else {
       this.setState((prevState) => ({
@@ -70,26 +80,38 @@ class CourseRegistrationPage extends Component {
           ...prevState.registeredCourses,
           { course, term: this.state.selectedTerm, status: 'Registered' },
         ],
+        registrationMessage: '', 
       }));
     }
   };
 
   render() {
-    const filteredCourses = this.state.selectedTerm ? coursesData[this.state.selectedTerm] : [];
+    const filteredCourses = this.state.selectedTerm
+      ? coursesData[this.state.selectedTerm]
+      : [];
 
     return (
       <div>
         <h1>Add Courses</h1>
-        <SearchCourses onSearchChange={this.handleSearchChange} searchResults={this.state.searchResults} />
-        <TermSelection terms={this.state.terms} selectedTerm={this.state.selectedTerm} onTermChange={this.handleTermChange} />
+        <SearchCourses
+          onSearchChange={this.handleSearchChange}
+          searchResults={this.state.searchResults}
+        />
+
+        <TermSelection
+          terms={this.state.terms}
+          selectedTerm={this.state.selectedTerm}
+          onTermChange={this.handleTermChange}
+        />
+
         <TermCourses
           term={this.state.selectedTerm}
           courses={filteredCourses}
           onAddCourse={this.handleAddCourse}
           termSelected={!!this.state.selectedTerm}
+          registrationMessage={this.state.registrationMessage}
         />
-        <br />
-        <p>Registered Courses is just an example showing registered classes, will remove and update to another page once back-end is connected!</p>
+        
         <RegisteredCourses
           registeredCourses={this.state.registeredCourses}
           onRemoveCourse={this.handleRemoveCourse}

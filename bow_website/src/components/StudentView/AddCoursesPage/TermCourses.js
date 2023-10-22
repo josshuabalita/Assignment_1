@@ -1,6 +1,6 @@
 import React from "react";
 
-const TermCourses = ({ term, courses, onAddCourse, termSelected }) => {
+const TermCourses = ({ term, courses, onAddCourse, termSelected, registrationMessage }) => {
   if (!termSelected) {
     return (
       <div>
@@ -29,10 +29,13 @@ const TermCourses = ({ term, courses, onAddCourse, termSelected }) => {
           </li>
         ))}
       </ul>
+      {registrationMessage && (
+        <div>
+          <p style={{ color: 'red' }}>{registrationMessage}</p>
+        </div>
+      )}
     </div>
   );
 };
 
 export default TermCourses;
-
-
