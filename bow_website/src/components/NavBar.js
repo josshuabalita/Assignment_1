@@ -1,18 +1,27 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 const Navigation = () => {
+  const location = useLocation();
+  const hiddenPaths = ['/login/instructor', '/login/student', '/register'];
+
+  const hideNavigation = hiddenPaths.includes(location.pathname);
+
+  if (hideNavigation) {
+    return null; 
+  }
+
   return (
     <nav>
       <ul>
         <li>
-          <Link to="/addcourses">Add Courses</Link>
+          <Link to="/student/addcourses">Add Courses</Link>
         </li>
         <li>
-          <Link to="/mycourses">My Courses</Link>
+          <Link to="/student/mycourses">My Courses</Link>
         </li>
         <li>
-          <Link to="/contact">Student Support</Link>
+          <Link to="/student/contact">Student Support</Link>
         </li>
       </ul>
     </nav>

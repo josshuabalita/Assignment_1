@@ -1,0 +1,20 @@
+.container {
+    margin: 50px;
+}
+
+.containerCourses {
+    margin: 20px auto;
+    padding: 30px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    max-width: 90vw;
+    width: 100%;
+}
+
+.h1 {
+    color: blue;
+    text-decoration: underline;
+    text-underline-position: under;
+    display: block;
+    width: 100%;
+}

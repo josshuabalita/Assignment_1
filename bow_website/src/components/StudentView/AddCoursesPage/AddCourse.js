@@ -4,6 +4,7 @@ import coursesData from './coursesData';
 import TermSelection from './TermSelection';
 import SearchCourses from './SearchCourses';
 import RegisteredCourses from './RegisterdCourses';
+import styles from './addCourseStyle.module.css';
 
 class CourseRegistrationPage extends Component {
   state = {
@@ -91,31 +92,33 @@ class CourseRegistrationPage extends Component {
       : [];
 
     return (
-      <div>
-        <h1>Add Courses</h1>
-        <SearchCourses
-          onSearchChange={this.handleSearchChange}
-          searchResults={this.state.searchResults}
-        />
+      <div className={styles.container}>
+        <h1 className={styles.h1}>Add Courses</h1>
+        <div className={styles.containerCourses}>
+          <SearchCourses
+            onSearchChange={this.handleSearchChange}
+            searchResults={this.state.searchResults}
+          />
 
-        <TermSelection
-          terms={this.state.terms}
-          selectedTerm={this.state.selectedTerm}
-          onTermChange={this.handleTermChange}
-        />
+          <TermSelection
+            terms={this.state.terms}
+            selectedTerm={this.state.selectedTerm}
+            onTermChange={this.handleTermChange}
+          />
 
-        <TermCourses
-          term={this.state.selectedTerm}
-          courses={filteredCourses}
-          onAddCourse={this.handleAddCourse}
-          termSelected={!!this.state.selectedTerm}
-          registrationMessage={this.state.registrationMessage}
-        />
-        
-        <RegisteredCourses
-          registeredCourses={this.state.registeredCourses}
-          onRemoveCourse={this.handleRemoveCourse}
-        />
+          <TermCourses
+            term={this.state.selectedTerm}
+            courses={filteredCourses}
+            onAddCourse={this.handleAddCourse}
+            termSelected={!!this.state.selectedTerm}
+            registrationMessage={this.state.registrationMessage}
+          />
+          
+          <RegisteredCourses
+            registeredCourses={this.state.registeredCourses}
+            onRemoveCourse={this.handleRemoveCourse}
+          />
+        </div>
       </div>
     );
   }
