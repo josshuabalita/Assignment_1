@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import { useNavigate } from "react-router-dom";
 
 class StudentLogin extends Component {
     constructor(props){
@@ -67,6 +66,7 @@ class StudentLogin extends Component {
         return(
             <div>
                 <div>
+                    <p>Welcome to the student portal!</p>
                     <p>Please sign in using your student account.</p>
                 </div>
 

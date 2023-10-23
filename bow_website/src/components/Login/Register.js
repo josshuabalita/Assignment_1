@@ -32,7 +32,7 @@ class Register extends Component {
       newUser.phone === "" ||
       newUser.dateOfBirth === "" ||
       newUser.department === "" ||
-      newUser.program === "" ||
+      newUser.program === "" || 
       newUser.username === "" ||
       newUser.password === ""
     ) {

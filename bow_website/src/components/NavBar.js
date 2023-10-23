@@ -3,12 +3,16 @@ import { Link, useLocation } from 'react-router-dom';
 
 const Navigation = () => {
   const location = useLocation();
-  const hiddenPaths = ['/login/instructor', '/login/student', '/register'];
+  const hiddenPaths = ['/','/login/instructor', '/register'];
 
-  const hideNavigation = hiddenPaths.includes(location.pathname);
+  const isStudentLoggedIn = !hiddenPaths.includes(location.pathname);
 
-  if (hideNavigation) {
-    return null; 
+  const handleSignOut = () => {
+    window.location.href = '/';
+  };
+
+  if (!isStudentLoggedIn) {
+    return null;
   }
 
   return (
@@ -22,6 +26,9 @@ const Navigation = () => {
         </li>
         <li>
           <Link to="/student/contact">Student Support</Link>
+        </li>
+        <li>
+          <button onClick={handleSignOut}>Sign Out</button>
         </li>
       </ul>
     </nav>

@@ -14,16 +14,16 @@ function App() {
     <Router>
       <Navigation />
       <Routes>
+        <Route path="/" element={<StudentLogin />} />
         <Route path="login/instructor" element={<InstructorLogin />} />
 
-        <Route path="login/student" element={<StudentLogin />} />
         <Route path="/student">
           <Route path="addcourses" element={<CourseRegistrationPage />} />
           <Route path="mycourses" element={<MyCourses />} />
           <Route path="contact" element={<ContactForm />} />
         </Route>
         
-        <Route path="/register" element={<Register />} />
+        <Route path="register" element={<Register />} />
       </Routes>
     </Router>
   );

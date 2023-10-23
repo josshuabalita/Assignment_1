@@ -14,19 +14,25 @@ class InstructorLogin extends Component {
 
     loginClick = (event) => {
         event.preventDefault();
-
-        const newLogin = {...this.state.login};
-
-        this.setState((prevState) => ({
+      
+        const { username, password } = this.state.login;
+      
+        if (username && password) {
+          const newLogin = { ...this.state.login };
+      
+          this.setState((prevState) => ({
             logins: [...prevState.logins, newLogin],
-
             login: {
-                username:"",
-                password:""
+              username: "",
+              password: "",
             },
-        }));
-        console.log("New Login Details: ", newLogin);
-    }
+          }));
+      
+          console.log("New Login Details: ", newLogin);
+        } else {
+          alert("Please enter both username and password.");
+        }
+      };
 
     handleInputChange = (event, field) => {
 
@@ -48,7 +54,7 @@ class InstructorLogin extends Component {
       };
 
     signInAsStudent =() => {
-        window.location.href = "/login/student";
+        window.location.href = "/";
     }
 
     Register = () => {
@@ -59,6 +65,7 @@ class InstructorLogin extends Component {
         return(
             <div>
                 <div>
+                    <p>Welcome to the student portal!</p>
                     <p>Please sign in using your instructor account.</p>
                 </div>
 
