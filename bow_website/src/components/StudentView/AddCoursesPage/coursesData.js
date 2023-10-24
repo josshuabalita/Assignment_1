@@ -1,4 +1,3 @@
-//data for courses
 
 const coursesData = {
     'Term 1': [

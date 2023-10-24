@@ -6,6 +6,9 @@ import ContactForm from './components/StudentView/StudentContactForm/studentCont
 import Register from './components/Login/Register';
 import StudentLogin from './components/Login/StudentLogin';
 import InstructorLogin from './components/Login/InstructorLogin';
+import ViewCourses from './components/InstructorView/ViewCourses';
+import ViewStudents from './components/InstructorView/ViewStudents';
+import SubmittedContactForm from './components/InstructorView/StudentContact';
 import Navigation from './components/NavBar';
 
 function App() {
@@ -23,6 +26,12 @@ function App() {
           <Route path="contact" element={<ContactForm />} />
         </Route>
         
+        <Route path="/instructor">
+          <Route path="viewcourses" element={< ViewCourses />} />
+          <Route path="viewstudents" element={< ViewStudents />} />
+          <Route path="studentcontactforms"  element={< SubmittedContactForm />}/>
+        </Route>
+
         <Route path="register" element={<Register />} />
       </Routes>
     </Router>

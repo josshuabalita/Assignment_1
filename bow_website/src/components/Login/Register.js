@@ -57,7 +57,7 @@ class Register extends Component {
       console.log("New User Details:", newUser);
       
       if (newUser.role === "student") {
-        window.location.href = "/login/student"; 
+        window.location.href = "/"; 
       } else if (newUser.role === "instructor") {
         window.location.href = "/login/instructor"; 
       }

@@ -29,6 +29,7 @@ class InstructorLogin extends Component {
           }));
       
           console.log("New Login Details: ", newLogin);
+          window.location.href = "/instructor/viewcourses";
         } else {
           alert("Please enter both username and password.");
         }
