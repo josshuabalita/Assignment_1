@@ -4,6 +4,7 @@ import coursesData from '../StudentView/AddCoursesPage/coursesData';
 import DropCourse from '../StudentView/MyCoursesPage/DropCourse';
 import SearchCourses from '../StudentView/AddCoursesPage/SearchCourses';
 import "./ViewCourses.css";
+import styles from '../StudentView/AddCoursesPage/addCourseStyle.module.css';
 
 class ViewCourses extends Component {
   constructor(props) {
@@ -83,41 +84,43 @@ class ViewCourses extends Component {
 
     return (
       <div className="view-courses-container">
-        <h1 className='view'>View Courses</h1>
-        <AddCourse onAddCourse={this.handleAddCourse} terms={Object.keys(courses)} />
-        <hr />
-        <SearchCourses onSearchChange={this.handleSearchChange} searchResults={this.state.searchResults} />
-        <div className="course-list">
-          {Object.entries(courses).map(([term, termCourses]) => (
-            <div key={term}>
-              <hr />
-              <h2 className='term'>{term}</h2>
-              <div className="courses-container">
-                {termCourses.map((course) => (
-                  <div className="course" key={course.courseCode}>
-                    <h3>{course.courseName}</h3>
-                    <p>
-                      Course Code: {course.courseCode}<br />
-                      Start Date: {this.getCourseStartDate(course.courseCode, term) || 'N/A'}<br />
-                      End Date: {this.getCourseEndDate(course.courseCode, term) || 'N/A'}<br />
-                      Tuition Fee: {course.tuitionFee}
-                    </p>
-                    <button onClick={() => this.handleDeleteCourse(course.courseCode, term)}>
-                      Delete Course
-                    </button>
-                    {coursesToDelete[term] === course.courseCode && (
-                      <DropCourse
-                        term={term}
-                        currentCourse={course}
-                        onConfirmDrop={() => this.handleConfirmDrop(term)}
-                        onCancelDrop={this.handleCancelDrop}
-                      />
-                    )}
-                  </div>
-                ))}
+        <h1 className='view'>Add New Courses</h1>
+        <div className={styles.containerCourses}>
+          <AddCourse onAddCourse={this.handleAddCourse} terms={Object.keys(courses)} />
+          <hr />
+          <SearchCourses onSearchChange={this.handleSearchChange} searchResults={this.state.searchResults} />
+          <div className="course-list">
+            {Object.entries(courses).map(([term, termCourses]) => (
+              <div key={term}>
+                <hr />
+                <h2 className='term'>{term}</h2>
+                <div className="courses-container">
+                  {termCourses.map((course) => (
+                    <div className="course" key={course.courseCode}>
+                      <h3>{course.courseName}</h3>
+                      <p>
+                        Course Code: {course.courseCode}<br />
+                        Start Date: {this.getCourseStartDate(course.courseCode, term) || 'N/A'}<br />
+                        End Date: {this.getCourseEndDate(course.courseCode, term) || 'N/A'}<br />
+                        Tuition Fee: {course.tuitionFee}
+                      </p>
+                      <button onClick={() => this.handleDeleteCourse(course.courseCode, term)}>
+                        Delete Course
+                      </button>
+                      {coursesToDelete[term] === course.courseCode && (
+                        <DropCourse
+                          term={term}
+                          currentCourse={course}
+                          onConfirmDrop={() => this.handleConfirmDrop(term)}
+                          onCancelDrop={this.handleCancelDrop}
+                        />
+                      )}
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
     );

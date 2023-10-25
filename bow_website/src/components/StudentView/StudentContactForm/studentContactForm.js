@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Information from './Information';
+import styles from '../AddCoursesPage/addCourseStyle.module.css'
 
 class ContactForm extends Component {
   constructor() {
@@ -33,26 +34,28 @@ class ContactForm extends Component {
     return (
       <div>
         <h1>Contact Admin</h1>
-        <form onSubmit={this.handleSubmit}>
-          <Information userObject={userObject} />
-          <div>
-            <label>Your Question:</label>
-            <textarea
-              value={this.state.question}
-              onChange={this.handleQuestionChange}
-              required
-            />
-          </div>
-          <div>
-            <button type="submit">Submit</button>
-          </div>
-        </form>
+        <div className={styles.containerCourses}>
+          <form onSubmit={this.handleSubmit}>
+            <Information userObject={userObject} />
+            <div>
+              <label>Your Question:</label>
+              <textarea
+                value={this.state.question}
+                onChange={this.handleQuestionChange}
+                required
+              />
+            </div>
+            <div>
+              <button type="submit">Submit</button>
+            </div>
+          </form>
 
-        {this.state.isSubmitted && (
-          <div style={{ color: 'red' }}>
-            Thank you for reaching out! We received your form and will get back to your question within 3-10 business days. Have a wonderful day!
-          </div>
-        )}
+          {this.state.isSubmitted && (
+            <div style={{ color: 'red' }}>
+              Thank you for reaching out! We received your form and will get back to your question within 3-10 business days. Have a wonderful day!
+            </div>
+          )}
+        </div>
       </div>
     );
   }

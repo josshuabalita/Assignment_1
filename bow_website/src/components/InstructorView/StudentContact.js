@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import ProgramFilter from './filterProgramResults';
 import "./StudentContact.css";
+import styles from '../StudentView/AddCoursesPage/addCourseStyle.module.css';
 
 function SubmittedContactForm({ userObject }) {
   const [selectedProgram, setSelectedProgram] = useState('all'); // Initialize selectedProgram inside the component function
@@ -59,52 +60,54 @@ function SubmittedContactForm({ userObject }) {
   return (
     <div>
       <h1 className='forms'>Received Contact Forms</h1>
-      <ProgramFilter
-        selectedProgram={selectedProgram}
-        handleProgramFilterChange={handleProgramFilterChange}
-      />
-      <br />
-      {filteredUsers.map((user, index) => (
-        <div key={index}>
-          <table>
-            <tbody>
-              <tr>
-                <td>First Name:</td>
-                <td>{user.firstName}</td>
-              </tr>
-              <tr>
-                <td>Last Name:</td>
-                <td>{user.lastName}</td>
-              </tr>
-              <tr>
-                <td>Email:</td>
-                <td>{user.email}</td>
-              </tr>
-              <tr>
-                <td>Phone:</td>
-                <td>{user.phone}</td>
-              </tr>
-              <tr>
-                <td>Date of Birth:</td>
-                <td>{user.dob}</td>
-              </tr>
-              <tr>
-                <td>Department:</td>
-                <td>{user.department}</td>
-              </tr>
-              <tr>
-                <td>Program:</td>
-                <td>{user.program}</td>
-              </tr>
-              <tr>
-                <td>Question:</td>
-                <td>{user.question}</td>
-              </tr>
-            </tbody>
-          </table>
-          <hr />
-        </div>
-      ))}
+      <div className={styles.containerCourses}>
+        <ProgramFilter
+          selectedProgram={selectedProgram}
+          handleProgramFilterChange={handleProgramFilterChange}
+        />
+        <hr />
+        {filteredUsers.map((user, index) => (
+          <div key={index}>
+            <table>
+              <tbody>
+                <tr>
+                  <td>First Name:</td>
+                  <td>{user.firstName}</td>
+                </tr>
+                <tr>
+                  <td>Last Name:</td>
+                  <td>{user.lastName}</td>
+                </tr>
+                <tr>
+                  <td>Email:</td>
+                  <td>{user.email}</td>
+                </tr>
+                <tr>
+                  <td>Phone:</td>
+                  <td>{user.phone}</td>
+                </tr>
+                <tr>
+                  <td>Date of Birth:</td>
+                  <td>{user.dob}</td>
+                </tr>
+                <tr>
+                  <td>Department:</td>
+                  <td>{user.department}</td>
+                </tr>
+                <tr>
+                  <td>Program:</td>
+                  <td>{user.program}</td>
+                </tr>
+                <tr>
+                  <td>Question:</td>
+                  <td>{user.question}</td>
+                </tr>
+              </tbody>
+            </table>
+            <hr />
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

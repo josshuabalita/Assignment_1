@@ -68,7 +68,7 @@ function AddCourse({ onAddCourse, terms }) {
             onChange={(e) => setStartMonthDay(e.target.value)}
             placeholder="Month Day (e.g., January 5)"
           />
-        </label>
+        </label> 
         <label>
           End Date(Month/Day):
           <input
