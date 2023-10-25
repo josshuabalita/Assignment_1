@@ -109,7 +109,7 @@ class CourseRegistrationPage extends Component {
           <TermCourses
             term={this.state.selectedTerm}
             courses={filteredCourses}
-            onAddCourse={this.handleAddCourse}
+            onAddCourse={this.handleAddCourse} 
             termSelected={!!this.state.selectedTerm}
             registrationMessage={this.state.registrationMessage}
           />

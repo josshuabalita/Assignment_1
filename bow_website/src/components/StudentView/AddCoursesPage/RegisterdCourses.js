@@ -1,4 +1,5 @@
 import React from "react";
+import "./addCourseStyle.module.css"
 
 const RegisteredCourses = ({ registeredCourses, onRemoveCourse }) => {
   // Group the registered courses by term
@@ -22,7 +23,7 @@ const RegisteredCourses = ({ registeredCourses, onRemoveCourse }) => {
               <li key={index}>
                 {course.course.courseName} ({course.course.courseCode})
                 <button onClick={() => onRemoveCourse(course)}>Remove</button>
-              </li>
+              </li>            
             ))}
           </ul>
         </div>

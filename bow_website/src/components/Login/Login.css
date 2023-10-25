@@ -1,0 +1,23 @@
+body{
+    background-color: lightslategray;
+    text-align: center;
+}
+
+.Welcome{
+    font-size: xx-large;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    border: 2px solid black;
+    margin-left:25%;
+    margin-top: 5%;
+    background-color: lightgrey;
+    width: 50%;
+
+    
+}
+
+.Information{
+    font-size: xx-large;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+
+

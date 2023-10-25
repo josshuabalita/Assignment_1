@@ -32,7 +32,7 @@ class ContactForm extends Component {
 
     return (
       <div>
-        <h2>Contact Admin</h2>
+        <h1>Contact Admin</h1>
         <form onSubmit={this.handleSubmit}>
           <Information userObject={userObject} />
           <div>

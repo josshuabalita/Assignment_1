@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import './Register.css';
 
 class Register extends Component {
   constructor(props) {
@@ -77,76 +78,90 @@ class Register extends Component {
   render() {
     return (
       <div>
+        <h1>Sign Up</h1>
         <input
         type="text"
         placeholder="First Name"
         value={this.state.user.firstName}
         onChange={(e) => this.handleInputChange(e, "firstName")}
         />
-
+      
+      <br/>
+      <br/>
         <input
         type="text"
         placeholder="Last Name"
         value={this.state.user.lastName}
         onChange={(e) => this.handleInputChange(e, "lastName")}
         />
-
+      <br/>
+      <br/>
         <input
         type="text"
         placeholder="Email"
         value={this.state.user.email}
         onChange={(e) => this.handleInputChange(e, "email")}
         />
-
+      <br/>
+      <br/>
         <input
         type="text"
         placeholder="Phone Number"
         value={this.state.user.phone}
         onChange={(e) => this.handleInputChange(e, "phone")}
         />
-
+      <br/>
+      <br/>
         <input
         type="date"
         placeholder="Date of Birth"
         value={this.state.user.dateOfBirth}
         onChange={(e) => this.handleInputChange(e, "dateOfBirth")}
         />
-
+      <br/>
+      <br/>
         <input
         type="text"
         placeholder="Department"
         value={this.state.user.department}
         onChange={(e) => this.handleInputChange(e, "department")}
         />
-
+      <br/>
+      <br/>
         <input
         type="text"
         placeholder="Program"
         value={this.state.user.program}
         onChange={(e) => this.handleInputChange(e, "program")}
         />
-
+      <br/>
+      <br/>
         <select
         value={this.state.user.role}
         onChange={(e) => this.handleInputChange(e, "role")}
         >
         <option value="student">Student</option>
         <option value="instructor">Instructor</option>
+       
         </select>
-
+        <br/>
+        <br/>
         <input
         type="text"
         placeholder="Username"
         value={this.state.user.username}
         onChange={(e) => this.handleInputChange(e, "username")}
         />
-
+        <br/>
+        <br/>
         <input
         type="password"
         placeholder="Password"
         value={this.state.user.password}
         onChange={(e) => this.handleInputChange(e, "password")}
         />
+        <br/>
+        <br/>
         <button onClick={this.submitClick} id="submit">
           Register
         </button>

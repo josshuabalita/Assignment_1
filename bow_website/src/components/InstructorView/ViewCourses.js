@@ -3,6 +3,7 @@ import AddCourse from './AddACourse';
 import coursesData from '../StudentView/AddCoursesPage/coursesData';
 import DropCourse from '../StudentView/MyCoursesPage/DropCourse';
 import SearchCourses from '../StudentView/AddCoursesPage/SearchCourses';
+import "./ViewCourses.css";
 
 class ViewCourses extends Component {
   constructor(props) {
@@ -82,7 +83,7 @@ class ViewCourses extends Component {
 
     return (
       <div className="view-courses-container">
-        <h1>View Courses</h1>
+        <h1 className='view'>View Courses</h1>
         <AddCourse onAddCourse={this.handleAddCourse} terms={Object.keys(courses)} />
         <hr />
         <SearchCourses onSearchChange={this.handleSearchChange} searchResults={this.state.searchResults} />
@@ -90,7 +91,7 @@ class ViewCourses extends Component {
           {Object.entries(courses).map(([term, termCourses]) => (
             <div key={term}>
               <hr />
-              <h2>{term}</h2>
+              <h2 className='term'>{term}</h2>
               <div className="courses-container">
                 {termCourses.map((course) => (
                   <div className="course" key={course.courseCode}>

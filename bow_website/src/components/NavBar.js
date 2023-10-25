@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import "./NavBar.css";
 
 const StudentNavigation = () => {
   const handleSignOut = () => {
@@ -18,10 +19,9 @@ const StudentNavigation = () => {
         <li>
           <Link to="/student/contact">Student Support</Link>
         </li>
-        <li>
-          <button onClick={handleSignOut}>Sign Out</button>
-        </li>
+        <br/>
       </ul>
+      <button onClick={handleSignOut}>Sign Out</button>
     </nav>
   );
 };
@@ -34,7 +34,7 @@ const InstructorNavigation = () => {
   return (
     <nav>
       <ul>
-        <li>
+        <li >
           <Link to="/instructor/viewcourses">Add New Courses</Link>
         </li>
         <li>
@@ -43,10 +43,8 @@ const InstructorNavigation = () => {
         <li>
           <Link to="/instructor/studentcontactforms">Student Contact Forms</Link>
         </li>
-        <li>
-          <button onClick={handleSignOutInstructor}>Sign Out</button>
-        </li>
       </ul>
+      <button onClick={handleSignOutInstructor}>Sign Out</button>
     </nav>
   );
 };

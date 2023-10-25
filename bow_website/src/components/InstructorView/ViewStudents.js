@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import students from './studentsData';
 import ProgramFilter from './filterProgramResults';
+import "./ViewStudents.css";
 
 function ViewStudents() {
   const tableStyle = {
@@ -45,7 +46,7 @@ function ViewStudents() {
 
   return (
     <div>
-      <h1>View My Students</h1>
+      <h1 className='students'>View My Students</h1>
       <ProgramFilter
         selectedProgram={selectedProgram}
         handleProgramFilterChange={handleProgramFilterChange}

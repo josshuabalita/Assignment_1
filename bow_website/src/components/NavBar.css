@@ -1,0 +1,33 @@
+nav a{
+    text-decoration: none;
+    color: black;
+
+}
+
+nav ul{
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    font-size: x-large;
+    font-weight: 500;
+}
+
+nav li{
+    padding: 10px;
+    background-color: lightgray;
+    margin: 2px;
+    transition: background-color 0.5s;
+
+}
+
+nav li:hover{
+    background-color: darkgray;
+}
+
+nav a:hover{
+    color: lightgray;
+    transition: background-color 0.5s;
+
+}

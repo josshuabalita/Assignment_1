@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import './Login.css';
 
 class InstructorLogin extends Component {
     constructor(props){
@@ -65,12 +66,12 @@ class InstructorLogin extends Component {
     render() {
         return(
             <div>
-                <div>
-                    <p>Welcome to the student portal!</p>
+                <div className="Welcome">
+                    <p>Welcome to the Instructor Portal!</p>
                     <p>Please sign in using your instructor account.</p>
                 </div>
-
-                <input
+              <div className="Information">
+                <input 
                 type="text"
                 placeholder="Username"
                 value={this.state.login.username}
@@ -82,13 +83,15 @@ class InstructorLogin extends Component {
                 value={this.state.login.password}
                 onChange={(e) => this.handleInputChange(e, "password")}
                 />
+                <br/>
                 <button onClick={this.loginClick}>Login</button>
                 <button>Forgot Password?</button>
                 <button onClick={this.signInAsStudent}>Sign in as Student</button>
 
                 <div>
                     <p>Not yet Registered? </p>
-                    <button onClick={this.Register}>Register here!!!</button>
+                    <button onClick={this.Register}>Register Here</button>
+                </div>
                 </div>
             </div>
             

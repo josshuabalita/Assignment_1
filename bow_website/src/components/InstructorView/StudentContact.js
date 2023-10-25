@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import ProgramFilter from './filterProgramResults';
+import "./StudentContact.css";
 
 function SubmittedContactForm({ userObject }) {
   const [selectedProgram, setSelectedProgram] = useState('all'); // Initialize selectedProgram inside the component function
@@ -57,7 +58,7 @@ function SubmittedContactForm({ userObject }) {
 
   return (
     <div>
-      <h2>Received Contact Forms</h2>
+      <h1 className='forms'>Received Contact Forms</h1>
       <ProgramFilter
         selectedProgram={selectedProgram}
         handleProgramFilterChange={handleProgramFilterChange}
