@@ -112,6 +112,7 @@ class Register extends Component {
         />
       <br/>
       <br/>
+        <span style={{ color: 'black' }}>Date of Birth: </span>
         <input
         type="date"
         placeholder="Date of Birth"
@@ -136,6 +137,7 @@ class Register extends Component {
         />
       <br/>
       <br/>
+        <span style={{ color: 'black' }}>Status: </span>
         <select
         value={this.state.user.role}
         onChange={(e) => this.handleInputChange(e, "role")}
