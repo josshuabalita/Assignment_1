@@ -99,7 +99,7 @@ class CourseRegistrationPage extends Component {
             onSearchChange={this.handleSearchChange}
             searchResults={this.state.searchResults}
           />
-
+          <hr />
           <TermSelection
             terms={this.state.terms}
             selectedTerm={this.state.selectedTerm}
@@ -113,7 +113,7 @@ class CourseRegistrationPage extends Component {
             termSelected={!!this.state.selectedTerm}
             registrationMessage={this.state.registrationMessage}
           />
-          
+          <hr />
           <RegisteredCourses
             registeredCourses={this.state.registeredCourses}
             onRemoveCourse={this.handleRemoveCourse}

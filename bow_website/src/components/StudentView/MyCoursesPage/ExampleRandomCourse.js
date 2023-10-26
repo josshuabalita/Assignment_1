@@ -97,6 +97,7 @@ class RandomCourse extends Component {
                         onCancelDrop={this.cancelDrop}
                     />
                 )}
+                <hr/>
             </div>
         );
     }
