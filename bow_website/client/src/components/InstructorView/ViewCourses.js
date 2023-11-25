@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import AddCourse from './AddACourse';
-import coursesData from '../StudentView/AddCoursesPage/coursesData';
 import DropCourse from '../StudentView/MyCoursesPage/DropCourse';
 import SearchCourses from '../StudentView/AddCoursesPage/SearchCourses';
 import "./ViewCourses.css";
@@ -11,26 +10,48 @@ class ViewCourses extends Component {
     super(props);
 
     this.state = {
-      courses: coursesData,
+      courses: [],
+      dropCourseIndex: null,
       coursesToDelete: {},
       searchResults: [],
     };
   }
 
-  handleAddCourse = (newCourse) => {
-    this.setState((prevState) => {
-      const { courses } = prevState;
-      const selectedTerm = newCourse.selectedTerm;
+  componentDidMount() {
+    fetch('http://localhost:8080/courses')
+      .then((response) => response.json())
+      .then((data) => {
+        this.setState({ courses: data });
+      })
+      .catch((error) => {
+        console.error('Error fetching courses:', error);
+      });
+  }
 
-      const updatedCourses = {
-        ...courses,
-        [selectedTerm]: [...(courses[selectedTerm] || []), newCourse],
-      };
-
-      return { courses: updatedCourses };
-    });
+  handleAddCourse = async (newCourse) => {
+    try {
+      const response = await fetch('http://localhost:8080/add-new-course', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newCourse),
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to add course');
+      }
+  
+      console.log('Course added successfully');
+      window.location.reload(); 
+    } catch (error) {
+      console.error('Error adding course:', error);
+      if (error.response) {
+        console.error('Response data:', error.response.data);
+      }
+    }
   };
-
+  
   handleDeleteCourse = (courseCode, term) => {
     this.setState((prevState) => {
       const { coursesToDelete } = prevState;
@@ -39,23 +60,28 @@ class ViewCourses extends Component {
     });
   };
 
-  handleConfirmDrop = (term) => {
-    this.setState((prevState) => {
-      const { courses } = prevState;
-      const { coursesToDelete } = prevState;
-      const courseCode = coursesToDelete[term];
-
-      if (!courseCode) {
-        return {};
+  handleConfirmDrop = async (courseCode) => {
+    try {
+      const response = await fetch(`http://localhost:8080/courses/${courseCode}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      const data = await response.json();
+  
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to delete course');
       }
+  
+      console.log(data.message); 
+      
+      window.location.reload(); 
 
-      const updatedCourses = { ...courses };
-      const termCourses = updatedCourses[term] || [];
-      const updatedTermCourses = termCourses.filter((course) => course.courseCode !== courseCode);
-      updatedCourses[term] = updatedTermCourses;
-
-      return { courses: updatedCourses, coursesToDelete: {} };
-    });
+    } catch (error) {
+      console.error('Error deleting course:', error);
+    }
   };
 
   handleCancelDrop = () => {
@@ -64,18 +90,22 @@ class ViewCourses extends Component {
 
   handleSearchChange = (newSearchTerm) => {
     this.setState({ searchTerm: newSearchTerm });
-
+  
     if (newSearchTerm === '') {
       this.setState({ searchResults: [] });
       return;
     }
-
-    const filteredResults = Object.keys(coursesData).flatMap((term) => {
-      const filteredCourses = coursesData[term].filter((course) =>
-        course.courseCode.toLowerCase().includes(newSearchTerm.toLowerCase())
+  
+    const { courses } = this.state;
+  
+    const filteredResults = courses.flatMap((termData) => {
+      const filteredCourses = termData.courses.filter((course) =>
+        course.courseCode.toLowerCase().includes(newSearchTerm.toLowerCase()) ||
+        course.courseName.toLowerCase().includes(newSearchTerm.toLowerCase())
       );
-      return filteredCourses.map((course) => ({ course, term }));
+      return filteredCourses.map((course) => ({ course, term: termData.term }));
     });
+  
     this.setState({ searchResults: filteredResults });
   };
 
@@ -86,33 +116,33 @@ class ViewCourses extends Component {
       <div className="view-courses-container">
         <h1 className='view'>Add New Courses</h1>
         <div className={styles.containerCourses}>
-          <AddCourse onAddCourse={this.handleAddCourse} terms={Object.keys(courses)} />
+          <AddCourse onAddCourse={this.handleAddCourse} terms={courses.map((termData) => termData.term)} />
           <hr />
           <SearchCourses onSearchChange={this.handleSearchChange} searchResults={this.state.searchResults} />
           <div className="course-list">
-            {Object.entries(courses).map(([term, termCourses]) => (
-              <div key={term}>
+          {courses.map((termData, index) => (
+              <div key={index}>
                 <hr />
-                <h2 className='term'>{term}</h2>
+                <h2 className='term'>{termData.term}</h2>
                 <div className="courses-container">
-                  {termCourses.map((course) => (
-                    <div className="course" key={course.courseCode}>
+                  {termData.courses.map((course, courseIndex) => (
+                    <div className="course" key={courseIndex}>
                       <h3>{course.courseName}</h3>
                       <p>
                         Course Code: {course.courseCode}<br />
-                        Start Date: {this.getCourseStartDate(course.courseCode, term) || 'N/A'}<br />
-                        End Date: {this.getCourseEndDate(course.courseCode, term) || 'N/A'}<br />
+                        Start Date: {course.startDate || 'N/A'}<br />
+                        End Date: {course.endDate || 'N/A'}<br />
                         Tuition Fee: {course.tuitionFee}
                       </p>
-                      <button onClick={() => this.handleDeleteCourse(course.courseCode, term)}>
+                      <button onClick={() => this.handleDeleteCourse(course.courseCode, termData.term)}>
                         Delete Course
                       </button>
-                      {coursesToDelete[term] === course.courseCode && (
+                      {coursesToDelete[termData.term] === course.courseCode && (
                         <DropCourse
-                          term={term}
-                          currentCourse={course}
-                          onConfirmDrop={() => this.handleConfirmDrop(term)}
-                          onCancelDrop={this.handleCancelDrop}
+                        term={termData.term}
+                        currentCourse={course.courseCode}
+                        onConfirmDrop={() => this.handleConfirmDrop(course.courseCode, termData.term)}
+                        onCancelDrop={this.handleCancelDrop}
                         />
                       )}
                     </div>
@@ -125,18 +155,7 @@ class ViewCourses extends Component {
       </div>
     );
   }
-
-  getCourseStartDate = (courseCode, term) => {
-    const termCourses = this.state.courses[term] || [];
-    const course = termCourses.find((c) => c.courseCode === courseCode);
-    return course && course.startMonthDay ? course.startMonthDay : coursesData[term][0].startDate || 'N/A';
-  };
-
-  getCourseEndDate = (courseCode, term) => {
-    const termCourses = this.state.courses[term] || [];
-    const course = termCourses.find((c) => c.courseCode === courseCode);
-    return course && course.endMonthDay ? course.endMonthDay : coursesData[term][0].endDate || 'N/A';
-  };
 }
+
 
 export default ViewCourses;
