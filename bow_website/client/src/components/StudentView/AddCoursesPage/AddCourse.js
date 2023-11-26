@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import TermCourses from './TermCourses';
-import coursesData from './coursesData';
 import TermSelection from './TermSelection';
 import SearchCourses from './SearchCourses';
 import RegisteredCourses from './RegisterdCourses';
@@ -8,13 +7,29 @@ import styles from './addCourseStyle.module.css';
 
 class CourseRegistrationPage extends Component {
   state = {
-    terms: Object.keys(coursesData),
+    terms: [],
     selectedTerm: '',
     searchTerm: '',
     registeredCourses: [],
     searchResults: [],
     registrationMessage: '', 
+    courses: [], 
   };
+
+  componentDidMount() {
+    fetch('http://localhost:8080/courses')
+      .then((response) => response.json())
+      .then((data) => {
+        const terms = data.map((termData) => termData.term); 
+        this.setState({ 
+          courses: data, 
+          terms: terms,
+        });
+      })
+      .catch((error) => {
+        console.error('Error fetching courses:', error);
+      });
+  }
 
   handleRemoveCourse = (courseToRemove) => {
     this.setState((prevState) => ({
@@ -26,23 +41,34 @@ class CourseRegistrationPage extends Component {
 
   handleSearchChange = (newSearchTerm) => {
     this.setState({ searchTerm: newSearchTerm });
-
+  
     if (newSearchTerm === '') {
       this.setState({ searchResults: [] });
       return;
     }
-
-    const filteredResults = this.state.terms.flatMap((term) => {
-      const filteredCourses = coursesData[term].filter((course) =>
-        course.courseCode.toLowerCase().includes(newSearchTerm.toLowerCase())
+  
+    const { courses } = this.state;
+  
+    const filteredResults = courses.flatMap((termData) => {
+      const filteredCourses = termData.courses.filter((course) =>
+        course.courseCode.toLowerCase().includes(newSearchTerm.toLowerCase()) ||
+        course.courseName.toLowerCase().includes(newSearchTerm.toLowerCase())
       );
-      return filteredCourses.map((course) => ({ course, term }));
+      return filteredCourses.map((course) => ({ course, term: termData.term }));
     });
+  
     this.setState({ searchResults: filteredResults });
   };
 
   handleTermChange = (term) => {
-    this.setState({ selectedTerm: term });
+    const { courses } = this.state;
+    const selectedTerm = courses.find((course) => course.term === term);
+    const filteredCourses = selectedTerm ? selectedTerm.courses : [];
+    
+    this.setState({
+      selectedTerm: term,
+      filteredCourses: filteredCourses,
+    });
   };
 
   handleAddCourse = (course) => {
@@ -87,9 +113,8 @@ class CourseRegistrationPage extends Component {
   };
 
   render() {
-    const filteredCourses = this.state.selectedTerm
-      ? coursesData[this.state.selectedTerm]
-      : [];
+    const { courses, selectedTerm } = this.state;
+    const filteredCourses = selectedTerm ? courses.filter(course => course.term === selectedTerm) : [];
 
     return (
       <div className={styles.container}>
@@ -108,7 +133,7 @@ class CourseRegistrationPage extends Component {
 
           <TermCourses
             term={this.state.selectedTerm}
-            courses={filteredCourses}
+            courses={this.state.filteredCourses} 
             onAddCourse={this.handleAddCourse} 
             termSelected={!!this.state.selectedTerm}
             registrationMessage={this.state.registrationMessage}
