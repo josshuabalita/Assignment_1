@@ -71,44 +71,28 @@ class CourseRegistrationPage extends Component {
     });
   };
 
-  handleAddCourse = (course) => {
-    const isAlreadyRegistered = this.state.registeredCourses.some(
-      (regCourse) =>
-        regCourse.course.courseCode === course.courseCode &&
-        regCourse.term === this.state.selectedTerm
-    );
-
-    if (isAlreadyRegistered) {
-      const existingCourse = this.state.registeredCourses.find(
-        (regCourse) =>
-          regCourse.course.courseCode === course.courseCode &&
-          regCourse.term === this.state.selectedTerm
-      );
-
-      if (existingCourse.status === 'Failed') {
-        this.setState((prevState) => ({
-          registeredCourses: prevState.registeredCourses.map((regCourse) =>
-            regCourse.course.courseCode === course.courseCode &&
-            regCourse.term === this.state.selectedTerm
-              ? { ...regCourse, status: 'Registered' }
-              : regCourse
-          ),
-          registrationMessage: '', 
-        }));
-      } else {
-        this.setState({
-          registrationMessage:
-            'You are already registered for this course in the current term.',
-        });
+  handleAddCourse = async (course) => {
+    const { selectedTerm } = this.state;
+  
+    const courseWithTerm = { ...course, term: selectedTerm };
+  
+    try {
+      const response = await fetch('http://localhost:8080/courses/student/added-courses', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(courseWithTerm),
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to add course');
       }
-    } else {
-      this.setState((prevState) => ({
-        registeredCourses: [
-          ...prevState.registeredCourses,
-          { course, term: this.state.selectedTerm, status: 'Registered' },
-        ],
-        registrationMessage: '', 
-      }));
+  
+      const data = await response.json();
+      console.log(data.message);
+    } catch (error) {
+      console.error('Error adding course:', error.message);
     }
   };
 
