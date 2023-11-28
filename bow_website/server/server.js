@@ -212,6 +212,37 @@ app.delete('/courses/student/registered/:courseCode', async (req,res) => {
 
 
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//Middleware for student contact forms
+const StudentForm = require('./models/formsSchema.js')
+
+app.post('/contact/student-form', async (req, res) => {
+  try {
+    const formData = req.body;
+
+    const newFormEntry = new StudentForm(formData);
+
+    await newFormEntry.save();
+
+    res.status(201).json({ message: 'Form submitted successfully' });
+  } catch (error) {
+    res.status(500).json({ error: 'An error occurred while submitting the form' });
+  }
+});
+
+
+//Get contact forms to display in Admin page
+app.get('/contact/student-form', async (req, res) => {
+  try {
+    const submittedForms = await StudentForm.find(); 
+
+    res.status(200).json(submittedForms); 
+  } catch (error) {
+    res.status(500).json({ error: 'An error occurred while fetching form data' });
+  }
+});
+
 
 
 

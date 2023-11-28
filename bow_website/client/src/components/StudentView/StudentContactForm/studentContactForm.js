@@ -11,9 +11,35 @@ class ContactForm extends Component {
     };
   }
 
-  handleSubmit = (e) => {
+  handleSubmit = async (e) => {
     e.preventDefault();
-    this.setState({ isSubmitted: true, question: '' });
+
+    try {
+      const userObject = {
+        firstName: 'John',
+        lastName: 'Doe',
+        email: 'johndoe@mybvc.ca',
+        phone: '123-456-7890',
+        dob: '1999-01-15',
+        department: 'Software Development',
+        program: 'Diploma',
+      };
+
+      await fetch('http://localhost:8080/contact/student-form', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...this.state,
+          ...userObject,
+        }),
+      });
+
+      this.setState({ isSubmitted: true, question: '' });
+    } catch (error) {
+      console.error('Error submitting form:', error);
+    }
   };
 
   handleQuestionChange = (e) => {
@@ -60,5 +86,6 @@ class ContactForm extends Component {
     );
   }
 }
+
 
 export default ContactForm;
