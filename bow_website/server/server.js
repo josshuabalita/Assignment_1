@@ -244,6 +244,62 @@ app.get('/contact/student-form', async (req, res) => {
 });
 
 
+// fetching all students
+
+const mongoose = require('mongoose')
+const Student = require('./node_modules/@mongodb-js');
+const RegisteredCourses = require('./models/addedCourseSchema.js');
+
+
+mongoose.connect('mongodb://localhost:27017/portal', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
+
+app.use(express.json());
+
+app.get('/courses/student/registered/:studentId', async (req, res) => {
+  try {
+    const studentId = req.params.studentId;
+
+    const studentRegisteredCourses = await RegisteredCourses.findOne({
+      'courses.studentId': studentId,
+    }).sort({term: 1});
+
+    if(!studentRegisteredCourses) {
+      return res.status(404).json({message: 'No courses registered for this student'});
+    }
+
+    res.status(200).json({RegisteredCourses: studentRegisteredCourses.courses});
+  }
+  catch(error) {
+    console.error('Error fetching registered courses for this student'. error);
+    res.status(500).send('Error fetching registered courses for this student');
+  }
+});
+
+app.get('instructor/view-my-student/courses', async (req, res) => {
+  try{
+    const allStudents = await Student.find();
+
+    const studentWithCourses = await Promise.all(
+      allStudents.map(async (student) => {
+        const studentRegisteredCourses = await RegisteredCourses.findOne({
+          'courses.studentId' : student._id.toString(),
+        }).sort({term: 1});
+      })
+    )
+    res.status(200).json({studentWithCourses});
+  }
+  catch (error) {
+    console.error(500).send('Error fetching registered courses for all students', error);
+    res.status(500).send('Error fetching registered courses for all students');
+  }
+})
+
+
+
+
 
 
 
