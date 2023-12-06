@@ -459,45 +459,34 @@ app.get('/contact/student-form', async (req, res) => {
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// fetching all students and registered courses
-app.get('/courses/student/registered/:studentId', async (req, res) => {
+// View registered students
+app.get('/instructor/view-my-student/courses', async (req, res) => {
   try {
-    const studentId = req.params.studentId;
-
-    const studentRegisteredCourses = await RegisteredCourses.findOne({
-      'courses.studentId': studentId,
-    }).sort({term: 1});
-
-    if(!studentRegisteredCourses) {
-      return res.status(404).json({message: 'No courses registered for this student'});
-    }
-
-    res.status(200).json({RegisteredCourses: studentRegisteredCourses.courses});
-  }
-  catch(error) {
-    console.error('Error fetching registered courses for this student'. error);
-    res.status(500).send('Error fetching registered courses for this student');
-  }
-});
-
-app.get('instructor/view-my-student/courses', async (req, res) => {
-  try{
-    const allStudents = await Student.find();
+    const students = await User.find({ role: 'student' }); 
 
     const studentWithCourses = await Promise.all(
-      allStudents.map(async (student) => {
-        const studentRegisteredCourses = await RegisteredCourses.findOne({
-          'courses.studentId' : student._id.toString(),
-        }).sort({term: 1});
+      students.map(async (student) => {
+        const studentRegisteredCourses = await User.findOne({ _id: student._id })
+          .populate('registeredCourses.courses');
+
+        return {
+          studentID: student.userID,
+          name: `${student.firstName} ${student.lastName}`,
+          email: student.email,
+          phone: student.phoneNumber,
+          dateOfBirth: student.dateOfBirth.toISOString().split('T')[0],
+          program: student.program,
+          department: student.department,
+          registeredCourses: studentRegisteredCourses.registeredCourses
+        };
       })
-    )
-    res.status(200).json({studentWithCourses});
+    );
+    res.status(200).json({ studentWithCourses });
+  } catch (error) {
+    console.error('Error fetching registered courses for students', error);
+    res.status(500).send('Error fetching registered courses for students');
   }
-  catch (error) {
-    console.error(500).send('Error fetching registered courses for all students', error);
-    res.status(500).send('Error fetching registered courses for all students');
-  }
-})
+});
 
 
 

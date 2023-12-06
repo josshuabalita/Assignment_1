@@ -6,7 +6,7 @@ function ProgramFilter({ program, handleProgramFilterChange }) {
       <label htmlFor="program-filter">Filter by Program:</label>
       <select id="program-filter" value={program} onChange={handleProgramFilterChange}>
         <option value="all">All Programs</option>
-        <option value="Post Diploma">Post Diploma</option>
+        <option value="Post-Diploma">Post Diploma</option>
         <option value="Diploma">Diploma</option>
         <option value="Certificate">Certificate</option>
       </select>

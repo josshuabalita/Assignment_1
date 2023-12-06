@@ -35,6 +35,10 @@ function SubmittedContactForm({ userObject }) {
           <div key={index}>
             <table>
               <tbody>
+              <tr>
+                  <td>Student ID:</td>
+                  <td>{user.userID}</td>
+                </tr>
                 <tr>
                   <td>First Name:</td>
                   <td>{user.firstName}</td>

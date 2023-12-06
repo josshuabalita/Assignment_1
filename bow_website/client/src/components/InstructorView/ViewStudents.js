@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import students from './studentsData';
+import React, { useState, useEffect } from 'react';
 import ProgramFilter from './filterProgramResults';
 import "./ViewStudents.css";
 import styles from '../StudentView/AddCoursesPage/addCourseStyle.module.css';
@@ -8,7 +7,7 @@ function ViewStudents() {
   const tableStyle = {
     borderCollapse: 'collapse',
     margin: 'auto',
-    width: '90%',
+    width: '100%',
   };
 
   const cellStyle = {
@@ -25,8 +24,20 @@ function ViewStudents() {
     backgroundColor: 'white',
   };
 
+  const [students, setStudents] = useState([]);
   const [selectedProgram, setSelectedProgram] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
+
+  useEffect(() => {
+    fetch('http://localhost:8080/instructor/view-my-student/courses')
+      .then((response) => response.json())
+      .then((data) => {
+        setStudents(data.studentWithCourses || []); 
+      })
+      .catch((error) => {
+        console.error('Error fetching data:', error);
+      });
+  }, []);
   
   const handleProgramFilterChange = (e) => {
     setSelectedProgram(e.target.value);
@@ -36,12 +47,11 @@ function ViewStudents() {
     setSearchQuery(e.target.value);
   };
 
-  const filteredStudents = students.filter(student => {
+  const filteredStudents = students.filter((student) => {
     return (
       (selectedProgram === 'all' || student.program === selectedProgram) &&
-      (student.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-       student.lastName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-       student.studentId.includes(searchQuery.toLowerCase()))
+      (student.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        student.studentID.toString().includes(searchQuery.toLowerCase()))
     );
   });
 
@@ -74,9 +84,9 @@ function ViewStudents() {
             </thead>
             <tbody>
               {filteredStudents.map((student, index) => (
-                <tr key={student.studentId} style={index % 2 === 0 ? evenRowStyle : oddRowStyle}>
-                  <td style={cellStyle}>{student.studentId}</td>
-                  <td style={cellStyle}>{student.firstName} {student.lastName}</td>
+              <tr key={student.studentID} style={index % 2 === 0 ? evenRowStyle : oddRowStyle}>
+                  <td style={cellStyle}>{student.studentID}</td>
+                  <td style={cellStyle}>{student.name}</td>
                   <td style={cellStyle}>{student.email}</td>
                   <td style={cellStyle}>{student.phone}</td>
                   <td style={cellStyle}>{student.dateOfBirth}</td>
@@ -84,12 +94,14 @@ function ViewStudents() {
                   <td style={cellStyle}>{student.department}</td>
                   <td style={cellStyle}>
                     <ul>
-                      {Object.keys(student.registeredCourses).map((term) => (
-                        <li key={term}>
-                          <strong>{term}:</strong>
+                      {student.registeredCourses.map((term, termIndex) => (
+                        <li key={`${student.studentID}-${termIndex}`}>
+                          <strong>{term.term}:</strong>
                           <ul>
-                            {student.registeredCourses[term].map((courseCode) => (
-                              <li key={courseCode} style={cellStyle}>{courseCode}</li>
+                            {term.courses.map((course, courseIndex) => (
+                              <li key={`${student.studentID}-${termIndex}-${courseIndex}`} style={cellStyle}>
+                                {course.courseCode}
+                              </li>
                             ))}
                           </ul>
                         </li>
