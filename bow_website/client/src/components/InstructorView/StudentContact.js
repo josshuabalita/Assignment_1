@@ -8,7 +8,9 @@ function SubmittedContactForm({ userObject }) {
   const [submittedForms, setSubmittedForms] = useState([]);
 
   useEffect(() => {
-    fetch('http://localhost:8080/contact/student-form') 
+    fetch('http://localhost:8080/contact/student-form', {
+      credentials: 'include'
+    }) 
       .then(response => response.json())
       .then(data => setSubmittedForms(data))
       .catch(error => console.error('Error fetching data:', error));

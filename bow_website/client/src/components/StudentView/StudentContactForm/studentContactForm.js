@@ -60,6 +60,7 @@ class ContactForm extends Component {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(formData),
+        credentials: 'include'
       });
   
       this.setState({ isSubmitted: true, question: '' });

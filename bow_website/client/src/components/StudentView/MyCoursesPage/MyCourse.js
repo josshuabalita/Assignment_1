@@ -126,7 +126,6 @@ class MyCourses extends Component {
               {registeredCourses.length > 0 ? (
                 registeredCourses.map((termObj) => (
                   <div key={termObj._id}>
-                    <hr />
                     <h2>{termObj.term}</h2>
                     {termObj.courses.length > 0 ? (
                       termObj.courses.map((course) => (
@@ -157,12 +156,12 @@ class MyCourses extends Component {
                             />
                           )}
                           <br />
-                          <hr />
                         </div>
                       ))
                     ) : (
                       <p>No registered courses found in this term.</p>
                     )}
+                    <hr />
                   </div>
                 ))
               ) : (

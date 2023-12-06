@@ -18,7 +18,9 @@ class ViewCourses extends Component {
   }
 
   componentDidMount() {
-    fetch('http://localhost:8080/courses')
+    fetch('http://localhost:8080/courses', {
+      credentials: 'include'
+    })
       .then((response) => response.json())
       .then((data) => {
         this.setState({ courses: data });
@@ -36,6 +38,7 @@ class ViewCourses extends Component {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(newCourse),
+        credentials: 'include'
       });
   
       if (!response.ok) {
@@ -67,6 +70,7 @@ class ViewCourses extends Component {
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include'
       });
   
       const data = await response.json();

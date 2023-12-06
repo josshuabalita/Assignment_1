@@ -29,7 +29,9 @@ function ViewStudents() {
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
-    fetch('http://localhost:8080/instructor/view-my-student/courses')
+    fetch('http://localhost:8080/instructor/view-my-student/courses', {
+      credentials: 'include'
+    })
       .then((response) => response.json())
       .then((data) => {
         setStudents(data.studentWithCourses || []); 

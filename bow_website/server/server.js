@@ -88,6 +88,7 @@ app.post('/login/student', async (req, res) => {
       department: user.department,
       registeredCourses: user.registeredCourses
     }; 
+
     res.status(200).json({ redirectURL: '/student/addcourses'});
   } catch (error) {
     res.status(500).json({ message: 'Server error' });
@@ -122,6 +123,14 @@ app.post('/login/admin', async (req, res) => {
       return res.status(403).json({ message: 'No instructor was found under this account.' });
     }
 
+    req.session.user = {
+      _id: user.userID,
+      name: user.firstName + " " + user.lastName,
+      email: user.email,
+      phoneNumber: user.phoneNumber,
+      dob: user.dateOfBirth,
+    }; 
+
     res.status(200).json({ redirectURL: '/instructor/viewcourses' });
   } catch (error) {
     res.status(500).json({ message: 'Server error' });
@@ -134,14 +143,18 @@ app.post('/login/admin', async (req, res) => {
 const coursesSchema = require('./models/coursesSchema.js');
 const coursesData = require('./coursesData.json'); 
 
-app.get('/courses', async (req, res) => {
+app.get('/courses',async (req, res) => {
     try {
-      const mongoCourses = await coursesSchema.find(); 
-  
-      if (!mongoCourses) {
-        return res.status(404).json({ message: 'No courses found' });
-      }
-      res.json(mongoCourses);
+      if (req.session && req.session.user) {
+        const mongoCourses = await coursesSchema.find(); 
+    
+        if (!mongoCourses) {
+          return res.status(404).json({ message: 'No courses found' });
+        }
+        res.json(mongoCourses);
+    } else {
+      res.status(401).json({ message: 'User not authenticated' });
+    }
     } catch (error) {
       console.error('Error retrieving courses data:', error);
       res.status(500).send('Error retrieving courses data');
@@ -152,39 +165,43 @@ app.get('/courses', async (req, res) => {
 //Add a new course to Database 
 app.post('/add-new-course', async (req, res) => {
     try {
-      const {
-        courseName,
-        courseCode,
-        selectedTerm,
-        startMonthDay,
-        endMonthDay,
-        tuitionFee,
-      } = req.body;
-  
-      if (!courseName || !courseCode || !selectedTerm || !startMonthDay || !endMonthDay || !tuitionFee) {
-        return res.status(400).json({ message: 'Please fill in all required fields' });
-      }
-  
-      const formattedTuitionFee = tuitionFee.startsWith('$') ? tuitionFee : `$${tuitionFee}`;
-  
-      const newCourse = {
-        courseName,
-        courseCode,
-        startDate: startMonthDay,
-        endDate: endMonthDay,
-        tuitionFee: formattedTuitionFee,
-      };
-  
-      const term = await coursesSchema.findOne({ term: selectedTerm });
-  
-      if (!term) {
-        return res.status(404).json({ message: 'Term not found' });
-      }
-  
-      term.courses.push(newCourse);
-      await term.save();
-  
-      res.status(201).json({ message: 'Course added successfully', course: newCourse });
+      if (req.session && req.session.user) {
+        const {
+          courseName,
+          courseCode,
+          selectedTerm,
+          startMonthDay,
+          endMonthDay,
+          tuitionFee,
+        } = req.body;
+    
+        if (!courseName || !courseCode || !selectedTerm || !startMonthDay || !endMonthDay || !tuitionFee) {
+          return res.status(400).json({ message: 'Please fill in all required fields' });
+        }
+    
+        const formattedTuitionFee = tuitionFee.startsWith('$') ? tuitionFee : `$${tuitionFee}`;
+    
+        const newCourse = {
+          courseName,
+          courseCode,
+          startDate: startMonthDay,
+          endDate: endMonthDay,
+          tuitionFee: formattedTuitionFee,
+        };
+    
+        const term = await coursesSchema.findOne({ term: selectedTerm });
+    
+        if (!term) {
+          return res.status(404).json({ message: 'Term not found' });
+        }
+    
+        term.courses.push(newCourse);
+        await term.save();
+    
+        res.status(201).json({ message: 'Course added successfully', course: newCourse });
+    } else {
+      res.status(401).json({ message: 'User not authenticated' });
+    }
     } catch (error) {
       console.error('Error adding course:', error);
       res.status(500).json({ message: 'Error adding course', error: error.message });
@@ -194,26 +211,29 @@ app.post('/add-new-course', async (req, res) => {
 
 //Delete Courses from Database/JSON 
 app.delete('/courses/:courseCode', async (req, res) => {
-  const courseCodeToDelete = req.params.courseCode;
-
   try {
-    const termContainingCourse = await coursesSchema.findOne({ 'courses.courseCode': courseCodeToDelete });
+    if (req.session && req.session.user) {
+      const courseCodeToDelete = req.params.courseCode;
+      const termContainingCourse = await coursesSchema.findOne({ 'courses.courseCode': courseCodeToDelete });
 
-    if (!termContainingCourse) {
-      return res.status(404).json({ message: 'Course not found' });
-    }
+      if (!termContainingCourse) {
+        return res.status(404).json({ message: 'Course not found' });
+      }
 
-    const courseIndex = termContainingCourse.courses.findIndex(course => course.courseCode === courseCodeToDelete);
+      const courseIndex = termContainingCourse.courses.findIndex(course => course.courseCode === courseCodeToDelete);
 
-    if (courseIndex === -1) {
-      return res.status(404).json({ message: 'Course not found within the term' });
-    }
+      if (courseIndex === -1) {
+        return res.status(404).json({ message: 'Course not found within the term' });
+      }
 
-    termContainingCourse.courses.splice(courseIndex, 1);
+      termContainingCourse.courses.splice(courseIndex, 1);
 
-    await termContainingCourse.save();
+      await termContainingCourse.save();
 
-    return res.json({ message: `Course ${courseCodeToDelete} deleted successfully` });
+      return res.json({ message: `Course ${courseCodeToDelete} deleted successfully` });
+  } else {
+    res.status(401).json({ message: 'User not authenticated' });
+  }
   } catch (error) {
     console.error('Error deleting course:', error);
     return res.status(500).json({ message: 'Error deleting course', error: error.message });
@@ -245,6 +265,25 @@ app.post('/courses/student/added-courses', async (req, res) => {
         return res.status(404).json({ message: 'User not found' });
       }
 
+      const program = user.program; 
+
+      let maxCoursesAllowed = 0;
+      if (program === 'Diploma') {
+        maxCoursesAllowed = Infinity; 
+      } else if (program === 'Post-Diploma') {
+        maxCoursesAllowed = 7; 
+      } else if (program === 'Certificate') {
+        maxCoursesAllowed = 1; 
+      }
+
+      const totalCoursesTaken = user.registeredCourses
+        .map((term) => term.courses.length)
+        .reduce((total, current) => total + current, 0);
+
+      if (totalCoursesTaken >= maxCoursesAllowed) {
+        return res.status(400).json({ message: 'Course limit reached for the program' });
+      }
+
       const existingTerm = user.registeredCourses.find((c) => c.term === term);
 
       if (!existingTerm) {
@@ -263,7 +302,6 @@ app.post('/courses/student/added-courses', async (req, res) => {
         return res.status(400).json({ message: 'Course already registered for this term' });
       }
 
-      // Create a new course object
       const newCourse = {
         courseName,
         courseCode,
@@ -408,37 +446,41 @@ app.get('/contact-form', async (req, res) => {
 
 app.post('/contact/student-form', async (req, res) => {
   try {
-    const formData = req.body; 
+    if (req.session && req.session.user) {
+      const formData = req.body; 
 
-    if (
-      !formData.userId ||
-      !formData.firstName ||
-      !formData.lastName ||
-      !formData.email ||
-      !formData.phone ||
-      !formData.dob ||
-      !formData.department ||
-      !formData.program ||
-      !formData.question
-    ) {
-      return res.status(400).json({ error: 'Incomplete form data' });
-    }
+      if (
+        !formData.userId ||
+        !formData.firstName ||
+        !formData.lastName ||
+        !formData.email ||
+        !formData.phone ||
+        !formData.dob ||
+        !formData.department ||
+        !formData.program ||
+        !formData.question
+      ) {
+        return res.status(400).json({ error: 'Incomplete form data' });
+      }
 
-    const newFormEntry = new StudentForm({
-      userID: formData.userId,
-      firstName: formData.firstName,
-      lastName: formData.lastName,
-      email: formData.email,
-      phone: formData.phone,
-      dob: formData.dob,
-      department: formData.department,
-      program: formData.program,
-      question: formData.question,
-    });
+      const newFormEntry = new StudentForm({
+        userID: formData.userId,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        phone: formData.phone,
+        dob: formData.dob,
+        department: formData.department,
+        program: formData.program,
+        question: formData.question,
+      });
 
-    await newFormEntry.save();
+      await newFormEntry.save();
 
-    res.status(201).json({ message: 'Form submitted successfully' });
+      res.status(201).json({ message: 'Form submitted successfully' });
+  } else {
+    res.status(401).json({ message: 'User not authenticated' });
+  }
   } catch (error) {
     res.status(500).json({ error: 'An error occurred while submitting the form' });
   }
@@ -448,9 +490,14 @@ app.post('/contact/student-form', async (req, res) => {
 //Get contact forms to display in Admin page
 app.get('/contact/student-form', async (req, res) => {
   try {
-    const submittedForms = await StudentForm.find(); 
+    if (req.session && req.session.user) {
 
-    res.status(200).json(submittedForms); 
+      const submittedForms = await StudentForm.find(); 
+
+      res.status(200).json(submittedForms); 
+    } else {
+      res.status(401).json({ message: 'User not authenticated' });
+    }
   } catch (error) {
     res.status(500).json({ error: 'An error occurred while fetching form data' });
   }
@@ -462,26 +509,31 @@ app.get('/contact/student-form', async (req, res) => {
 // View registered students
 app.get('/instructor/view-my-student/courses', async (req, res) => {
   try {
-    const students = await User.find({ role: 'student' }); 
+    if (req.session && req.session.user) {
 
-    const studentWithCourses = await Promise.all(
-      students.map(async (student) => {
-        const studentRegisteredCourses = await User.findOne({ _id: student._id })
-          .populate('registeredCourses.courses');
+      const students = await User.find({ role: 'student' }); 
 
-        return {
-          studentID: student.userID,
-          name: `${student.firstName} ${student.lastName}`,
-          email: student.email,
-          phone: student.phoneNumber,
-          dateOfBirth: student.dateOfBirth.toISOString().split('T')[0],
-          program: student.program,
-          department: student.department,
-          registeredCourses: studentRegisteredCourses.registeredCourses
-        };
-      })
-    );
-    res.status(200).json({ studentWithCourses });
+      const studentWithCourses = await Promise.all(
+        students.map(async (student) => {
+          const studentRegisteredCourses = await User.findOne({ _id: student._id })
+            .populate('registeredCourses.courses');
+
+          return {
+            studentID: student.userID,
+            name: `${student.firstName} ${student.lastName}`,
+            email: student.email,
+            phone: student.phoneNumber,
+            dateOfBirth: student.dateOfBirth.toISOString().split('T')[0],
+            program: student.program,
+            department: student.department,
+            registeredCourses: studentRegisteredCourses.registeredCourses
+          };
+        })
+      );
+      res.status(200).json({ studentWithCourses });
+    } else {
+      res.status(401).json({ message: 'User not authenticated' });
+    }
   } catch (error) {
     console.error('Error fetching registered courses for students', error);
     res.status(500).send('Error fetching registered courses for students');
