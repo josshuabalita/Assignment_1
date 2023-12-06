@@ -7,8 +7,6 @@ const addedCoursesSchema = new mongoose.Schema({
     endDate: String, 
     tuitionFee: String,
     term: String, 
-}, {
-    timestamp: true
 });
 
 const term = new mongoose.Schema({

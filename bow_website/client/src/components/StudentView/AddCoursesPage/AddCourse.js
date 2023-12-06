@@ -17,7 +17,9 @@ class CourseRegistrationPage extends Component {
   };
 
   componentDidMount() {
-    fetch('http://localhost:8080/courses')
+    fetch('http://localhost:8080/courses', {
+      credentials: 'include'
+    })
       .then((response) => response.json())
       .then((data) => {
         const terms = data.map((termData) => termData.term); 
@@ -29,6 +31,7 @@ class CourseRegistrationPage extends Component {
       .catch((error) => {
         console.error('Error fetching courses:', error);
       });
+    
   }
 
   handleRemoveCourse = (courseToRemove) => {
@@ -73,26 +76,37 @@ class CourseRegistrationPage extends Component {
 
   handleAddCourse = async (course) => {
     const { selectedTerm } = this.state;
-  
-    const courseWithTerm = { ...course, term: selectedTerm };
-  
+
+    if (!selectedTerm) {
+      console.error('Please select a term before adding a course.');
+      return;
+    }
+
     try {
+      const courseToAdd = {
+        ...course,
+        term: selectedTerm,
+      };
+
       const response = await fetch('http://localhost:8080/courses/student/added-courses', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(courseWithTerm),
+        body: JSON.stringify(courseToAdd),
+        credentials: 'include', 
       });
-  
+
       if (!response.ok) {
         throw new Error('Failed to add course');
       }
-  
+
       const data = await response.json();
-      console.log(data.message);
+      this.setState({ registrationMessage: data.message }); 
+
     } catch (error) {
       console.error('Error adding course:', error.message);
+      this.setState({ registrationMessage: 'Error adding course' }); 
     }
   };
 

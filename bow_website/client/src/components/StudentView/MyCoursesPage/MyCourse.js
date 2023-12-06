@@ -14,155 +14,164 @@ class MyCourses extends Component {
     }
 
     componentDidMount() {
-        fetch('http://localhost:8080/courses/student/registered')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                const initialActionStates = {};
-                data.courses.forEach(term => {
-                    term.courses.forEach(course => {
-                        initialActionStates[course._id] = {
-                            isChangeWindowOpen: false,
-                            isDropWindowOpen: false,
-                            isActionConfirming: false,
-                        };
-                    });
-                });
-                this.setState({
-                    registeredCourses: data.courses,
-                    actionStates: initialActionStates,
-                });
-            })
-            .catch(error => {
-                console.error('Error fetching registered courses:', error);
-            });
-
-            fetch('http://localhost:8080/courses')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                this.setState({ termCourses: data });
-            })
-            .catch(error => {
-                console.error('Error fetching all courses:', error);
-            });
-    }
-
-    dropCourse = (course) => {
-        const { actionStates } = this.state;
-    
-        if (actionStates[course._id].isActionConfirming) {
-            return;
-        }
-    
-        this.setState(prevState => ({
-            currentCourse: course,
-            actionStates: {
-                ...prevState.actionStates,
-                [course._id]: {
-                    ...prevState.actionStates[course._id],
-                    isDropWindowOpen: true,
-                    isActionConfirming: true,
-                },
-            },
-        }));
-    };
-
-    confirmDrop = async (courseCode) => {
-        try {
-            const response = await fetch(`http://localhost:8080/courses/student/registered/${courseCode}`, {
-                method: 'DELETE',
-            });
-    
+          fetch('http://localhost:8080/courses/student/registered', {
+            credentials: 'include', 
+          })
+            .then((response) => {
             if (!response.ok) {
-                const errorMessage = await response.json();
-                throw new Error(errorMessage.message || 'Failed to delete course');
+              throw new Error('Network response was not ok');
+            }
+            return response.json();
+          })
+          .then((data) => {
+            if (!data || !data.coursesByTerm || data.coursesByTerm.length === 0) {
+              throw new Error('No registered courses found');
             }
     
-            this.setState(prevState => ({
-                currentCourse: null,
+            const initialActionStates = {};
+            data.coursesByTerm.forEach((termObj) => {
+              termObj.courses.forEach((course) => {
+                initialActionStates[course._id] = {
+                  isChangeWindowOpen: false,
+                  isDropWindowOpen: false,
+                  isActionConfirming: false,
+                };
+              });
+            });
+    
+            this.setState({
+              registeredCourses: data.coursesByTerm || [], 
+              actionStates: initialActionStates,
+            });
+          })
+          .catch((error) => {
+            console.error('Error fetching registered courses:', error);
+          });
+      }
+
+      dropCourse = (course) => {
+        const { actionStates } = this.state;
+      
+        if (actionStates[course._id]?.isActionConfirming) {
+          return;
+        }
+      
+        this.setState((prevState) => ({
+          currentCourse: course,
+          actionStates: {
+            ...prevState.actionStates,
+            [course._id]: {
+              ...prevState.actionStates[course._id],
+              isDropWindowOpen: true,
+              isActionConfirming: true,
+            },
+          },
+        }));
+      };
+
+      confirmDrop = async (courseCode) => {
+        try {
+          const response = await fetch(
+            `http://localhost:8080/courses/student/registered/${courseCode}`,
+            {
+              method: 'DELETE',
+              credentials: 'include', 
+            }
+          );
+      
+          if (!response.ok) {
+            const errorMessage = await response.json();
+            throw new Error(errorMessage.message || 'Failed to delete course');
+          }
+      
+          // Update the action state for the current course being dropped
+          this.setState((prevState) => ({
+            currentCourse: null,
+            actionStates: {
+              ...prevState.actionStates,
+              [prevState.currentCourse._id]: {
+                ...prevState.actionStates[prevState.currentCourse._id],
                 isDropWindowOpen: false,
                 isActionConfirming: false,
-                isAnyActionConfirming: false,
-            }));
-    
-            window.location.reload();
-        } catch (error) {
-            console.error('Error deleting course:', error);
-        }
-    };
-
-    cancelDrop = (courseId) => {
-        this.setState(prevState => ({
-            actionStates: {
-                ...prevState.actionStates,
-                [courseId]: {
-                    ...prevState.actionStates[courseId],
-                    isDropWindowOpen: false,
-                    isActionConfirming: false,
-                },
+              },
             },
-        }));
-    };
+          }));
+      
+          window.location.reload();
+        } catch (error) {
+          console.error('Error deleting course:', error);
+        }
+      };
 
-    render() {
-        const { registeredCourses, currentCourse, actionStates, termCourses } = this.state;
-    
+      cancelDrop = () => {
+        this.setState((prevState) => ({
+          actionStates: {
+            ...prevState.actionStates,
+            [prevState.currentCourse._id]: {
+              ...prevState.actionStates[prevState.currentCourse._id],
+              isDropWindowOpen: false,
+              isActionConfirming: false,
+            },
+          },
+        }));
+      };
+
+      render() {
+        const { registeredCourses, actionStates } = this.state;
+      
         return (
-            <div>
-                <h1>My Courses</h1>
-                <div className={styles.containerCourses}>
-                    {registeredCourses.length > 0 ? (
-                        registeredCourses.map(term => (
-                            <div key={term._id}>
-                                <h2>{term.term}</h2>
-                                {term.courses.length > 0 ? (
-                                    term.courses.map(course => (
-                                        <div key={course._id}>
-                                            <strong>{course.courseName}</strong>
-                                            <br />
-                                            <span>Course Code: {course.courseCode}</span>
-                                            <br />
-                                            <span>Start Date: {course.startDate}</span>
-                                            <br />
-                                            <span>End Date: {course.endDate}</span>
-                                            <br />
-                                            <span>Tuition Fee: {course.tuitionFee}</span>
-                                            <br />
-                                            <button disabled={actionStates[course._id].isActionConfirming} onClick={() => this.dropCourse(course)}>Drop Course</button>
-                                            <br />
-                                            {actionStates[course._id].isDropWindowOpen && (
-                                                <DropCourse
-                                                    term={term.term}
-                                                    onConfirmDrop={() => this.confirmDrop(course.courseCode)} 
-                                                    onCancelDrop={() => this.cancelDrop(course._id)} 
-                                                    currentCourse={course}
-                                                />
-                                            )}
-                                            <br />
-                                        </div>
-                                    ))
-                                ) : (
-                                    <p>No registered courses found in this term.</p>
-                                )}
-                                <hr />
-                            </div>
-                        ))
+          <div>
+            <h1>My Courses</h1>
+            <div className={styles.containerCourses}>
+              {registeredCourses.length > 0 ? (
+                registeredCourses.map((termObj) => (
+                  <div key={termObj._id}>
+                    <hr />
+                    <h2>{termObj.term}</h2>
+                    {termObj.courses.length > 0 ? (
+                      termObj.courses.map((course) => (
+                        <div key={course._id}>
+                          <strong>{course.courseName}</strong>
+                          <br />
+                          <span>Course Code: {course.courseCode}</span>
+                          <br />
+                          <span>Start Date: {course.startDate}</span>
+                          <br />
+                          <span>End Date: {course.endDate}</span>
+                          <br />
+                          <span>Tuition Fee: {course.tuitionFee}</span>
+                          <br />
+                          <button
+                            disabled={actionStates[course._id]?.isActionConfirming}
+                            onClick={() => this.dropCourse(course)}
+                          >
+                            Drop Course
+                          </button>
+                          <br />
+                          {actionStates[course._id]?.isDropWindowOpen && (
+                            <DropCourse
+                              term={termObj.term}
+                              onConfirmDrop={() => this.confirmDrop(course.courseCode)}
+                              onCancelDrop={() => this.cancelDrop(course._id)}
+                              currentCourse={course}
+                            />
+                          )}
+                          <br />
+                          <hr />
+                        </div>
+                      ))
                     ) : (
-                        <p>No registered courses found.</p>
+                      <p>No registered courses found in this term.</p>
                     )}
-                </div>
+                  </div>
+                ))
+              ) : (
+                <p>No registered courses found.</p>
+              )}
             </div>
+          </div>
         );
-    }
+      }
 }
 
 
