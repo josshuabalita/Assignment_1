@@ -8,11 +8,11 @@ class Register extends React.Component {
     const form = event.target.form;
     const formData = new FormData(form);
     const user = {};
-  
+
     formData.forEach((value, key) => {
       user[key] = value;
     });
-  
+
     try {
       const response = await fetch('http://localhost:8080/register', {
         method: 'POST',
@@ -21,37 +21,55 @@ class Register extends React.Component {
         },
         body: JSON.stringify(user),
       });
-  
+
       if (response.ok) {
         const { redirectURL } = await response.json();
-        window.location.href = `http://localhost:3000${redirectURL}`; 
+        window.location.href = `http://localhost:3000/`;
       } else {
-        throw new Error('Registration failed');
+        const errorParagraph = document.getElementById('errorMessage');
+        errorParagraph.textContent = 'Registration failed';
+        errorParagraph.style.color = 'darkred';
+
+        // Check specific fields for validation messages
+        const emailField = form.querySelector('input[name="email"]');
+        const phoneField = form.querySelector('input[name="phoneNumber"]');
+        if (!emailField.checkValidity()) {
+          errorParagraph.textContent = emailField.validationMessage;
+        } else if (!phoneField.checkValidity()) {
+          errorParagraph.textContent = phoneField.validationMessage;
+        }
       }
     } catch (error) {
       console.error('Error registering user:', error);
     }
   };
 
+
   render() {
     return (
       <div>
         <h1>Sign Up</h1>
+        <p id="errorMessage"></p> 
         <form>
           <input type="text" name="firstName" placeholder="First Name" />
           <br/><br/>
           <input type="text" name="lastName" placeholder="Last Name" />
           <br/><br/>
-          <input type="text" name="email" placeholder="Email" />
+          <input type="text" name="email" placeholder="Email" pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}" title="Please enter a valid email address (e.g. johndoe@gmail.com)" required />
           <br/><br/>
-          <input type="text" name="phoneNumber" placeholder="Phone Number" />
+          <input type="text" name="phoneNumber" placeholder="123-456-7890" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" title="Please enter a phone number in the format 123-456-7890" required />
           <br/><br/>
           <span style={{ color: 'black' }}>Date of Birth: </span>
           <input type="date" name="dateOfBirth" placeholder="Date of Birth" />
           <br/><br/>
           <input type="text" name="department" placeholder="Department" />
           <br/><br/>
-          <input type="text" name="program" placeholder="Program" />
+          <span style={{ color: 'black' }}>Program: </span>
+          <select name="program">
+              <option value="diploma">Diploma</option>
+              <option value="post-diploma">Post-Diploma</option>
+              <option value="certificate">Certificate</option>
+          </select>
           <br/><br/>
           <span style={{ color: 'black' }}>Status: </span>
           <select name="role">
