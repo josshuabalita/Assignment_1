@@ -24,7 +24,7 @@ class Register extends React.Component {
 
       if (response.ok) {
         const { redirectURL } = await response.json();
-        window.location.href = `http://localhost:3000/`;
+        window.location.href = `http://localhost:3000/${redirectURL}`;
       } else {
         const errorParagraph = document.getElementById('errorMessage');
         errorParagraph.textContent = 'Registration failed';
@@ -66,9 +66,9 @@ class Register extends React.Component {
           <br/><br/>
           <span style={{ color: 'black' }}>Program: </span>
           <select name="program">
-              <option value="diploma">Diploma</option>
-              <option value="post-diploma">Post-Diploma</option>
-              <option value="certificate">Certificate</option>
+              <option value="Diploma">Diploma</option>
+              <option value="Post-Diploma">Post-Diploma</option>
+              <option value="Certificate">Certificate</option>
           </select>
           <br/><br/>
           <span style={{ color: 'black' }}>Status: </span>
