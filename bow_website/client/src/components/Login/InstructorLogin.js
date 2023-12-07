@@ -21,11 +21,14 @@ class InstructorLogin extends Component {
         body: JSON.stringify(login),
       });
 
-      if (response.ok) {
-        const { redirectURL } = await response.json();
-        window.location.href = redirectURL;
+      if (!response.ok) {
+        const errorData = await response.json();
+        const errorMessage = errorData.message;
+        const errorDiv = document.getElementById('error-message');
+        errorDiv.textContent = errorMessage;
       } else {
-        throw new Error('Login failed');
+        const data = await response.json();
+        window.location.href = data.redirectURL;
       }
     } catch (error) {
       console.error('Error logging in:', error);
@@ -60,6 +63,7 @@ class InstructorLogin extends Component {
               name="password"
             />
             <br/>
+            <div id="error-message" className="ErrorMessage"></div>
             <button onClick={this.loginClick}>Login</button>
             <button>Forgot Password?</button>
           </form>

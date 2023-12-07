@@ -1,10 +1,18 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import axios from 'axios';
 import "./NavBar.css";
 
 const StudentNavigation = () => {
-  const handleSignOut = () => {
-    window.location.href = '/';
+
+  const handleSignOut = async () => {
+    try {
+      await axios.post('http://localhost:8080/logout');
+      window.location.href = '/';
+      window.history.pushState(null, '', '/');
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
   };
 
   return (
@@ -27,8 +35,15 @@ const StudentNavigation = () => {
 };
 
 const InstructorNavigation = () => {
-  const handleSignOutInstructor = () => {
-    window.location.href = '/login/instructor';
+
+  const handleSignOutInstructor = async () => {
+    try {
+      await axios.post('http://localhost:8080/logout');
+      window.location.href = '/login/instructor'; 
+      window.history.pushState(null, '', '/login/instructor')
+    } catch (error) {
+      console.error('Error signing out instructor:', error);
+    }
   }
 
   return (

@@ -22,12 +22,14 @@ class StudentLogin extends Component {
         credentials: 'include', 
       });
     
-      if (response.ok) {
-        const data = await response.json();
-        window.location.href = data.redirectURL; 
-      } else {
+      if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message);
+        const errorMessage = errorData.message;
+        const errorDiv = document.getElementById('error-message');
+        errorDiv.textContent = errorMessage;
+      } else {
+        const data = await response.json();
+        window.location.href = data.redirectURL;
       }
     } catch (error) {
       console.error('Error logging in:', error);
@@ -55,10 +57,10 @@ class StudentLogin extends Component {
             <input type="text" placeholder="Username" name="username" />
             <input type="password" placeholder="Password" name="password" />
             <br />
+            <div id="error-message" className="ErrorMessage"></div>
             <button onClick={this.loginClick}>Login</button>
             <button>Forgot Password?</button>
           </form>
-
           <button onClick={this.signInAsInstructor}>Sign in as Instructor</button>
 
           <div>

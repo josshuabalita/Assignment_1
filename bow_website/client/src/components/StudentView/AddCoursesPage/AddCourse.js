@@ -76,18 +76,22 @@ class CourseRegistrationPage extends Component {
 
   handleAddCourse = async (course) => {
     const { selectedTerm } = this.state;
-
+  
     if (!selectedTerm) {
       console.error('Please select a term before adding a course.');
+      const errorDiv = document.getElementById('registrationMessage');
+      if (errorDiv) {
+        errorDiv.textContent = 'Please select a term before adding a course.';
+      }
       return;
     }
-
+  
     try {
       const courseToAdd = {
         ...course,
         term: selectedTerm,
       };
-
+  
       const response = await fetch('http://localhost:8080/courses/student/added-courses', {
         method: 'POST',
         headers: {
@@ -96,22 +100,29 @@ class CourseRegistrationPage extends Component {
         body: JSON.stringify(courseToAdd),
         credentials: 'include', 
       });
-
+  
+      const responseData = await response.json();
+  
       if (!response.ok) {
-        throw new Error('Failed to add course');
+        const errorDiv = document.getElementById('registrationMessage');
+        if (errorDiv) {
+          errorDiv.textContent = responseData.message || 'Failed to add course';
+        }
+        throw new Error(responseData.message || 'Failed to add course');
       }
-
-      const data = await response.json();
-      this.setState({ registrationMessage: data.message }); 
-
+  
+      const successDiv = document.getElementById('registrationMessage');
+      if (successDiv) {
+        successDiv.textContent = responseData.message;
+      }
+  
     } catch (error) {
       console.error('Error adding course:', error.message);
-      this.setState({ registrationMessage: 'Error adding course' }); 
     }
   };
 
   render() {
-    const { courses, selectedTerm } = this.state;
+    const { courses, selectedTerm, registrationMessage } = this.state;
     const filteredCourses = selectedTerm ? courses.filter(course => course.term === selectedTerm) : [];
 
     return (
@@ -136,6 +147,7 @@ class CourseRegistrationPage extends Component {
             termSelected={!!this.state.selectedTerm}
             registrationMessage={this.state.registrationMessage}
           />
+        <p id="registrationMessage" className={styles.errorMessage}>{registrationMessage}</p>
         </div>
       </div>
     );

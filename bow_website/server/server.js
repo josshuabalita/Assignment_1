@@ -52,7 +52,7 @@ app.post('/register', async (req, res) => {
     } else if (savedUser.role === "instructor") {
       redirectURL = '/login/instructor';
     }
-    res.status(200).json({ redirectURL }); 
+    res.status(200).json({ redirectURL, message: 'Registeration Successful! Please sign in.' }); 
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
@@ -71,11 +71,11 @@ app.post('/login/student', async (req, res) => {
     }
 
     if (user.password !== password) {
-      return res.status(401).json({ message: 'Password does not match.' });
+      return res.status(401).json({ message: 'Invalid Password.' });
     }
 
     if (user.role !== 'student') {
-      return res.status(403).json({ message: 'No student was found under this account.' });
+      return res.status(403).json({ message: 'Account not found.' });
     }
 
     req.session.user = {
@@ -116,11 +116,11 @@ app.post('/login/admin', async (req, res) => {
     }
 
     if (user.password !== password) {
-      return res.status(401).json({ message: 'Password does not match.' });
+      return res.status(401).json({ message: 'Invalid Password.' });
     }
 
     if (user.role !== 'instructor') {
-      return res.status(403).json({ message: 'No instructor was found under this account.' });
+      return res.status(403).json({ message: 'Account not found.' });
     }
 
     req.session.user = {
@@ -136,6 +136,24 @@ app.post('/login/admin', async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
+
+//Logout to kill session
+app.post('/logout', (req, res) => {
+  try {
+    req.session.destroy(err => {
+      if (err) {
+        return res.status(500).json({ message: 'Error logging out' });
+      }
+
+      res.clearCookie('connect.sid');
+      res.header('Cache-Control', 'no-cache, no-store, must-revalidate');
+      res.redirect('/');
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 

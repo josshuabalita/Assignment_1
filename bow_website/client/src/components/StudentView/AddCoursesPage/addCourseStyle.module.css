@@ -25,3 +25,9 @@ ul{
     font-size: larger;
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
 }
+
+.errorMessage {
+    color: red;
+    font-family: 'Times New Roman', Times, serif;
+    font-weight: bold;
+}

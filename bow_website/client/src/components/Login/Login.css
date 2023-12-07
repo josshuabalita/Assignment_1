@@ -20,4 +20,10 @@ body{
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
 }
 
+.ErrorMessage {
+    color: darkred;
+    font-size: 0.6em; 
+    font-family: 'Times New Roman', Times, serif;
+}
+
 
