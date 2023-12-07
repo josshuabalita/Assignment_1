@@ -43,6 +43,11 @@ class InstructorLogin extends Component {
     window.location.href = "/register";
   };
 
+  forgotPassword = () => {
+    const message = "Please contact the school administrator to reset your password.";
+    alert(message);
+  };
+
   render() {
     return (
       <div>
@@ -65,7 +70,7 @@ class InstructorLogin extends Component {
             <br/>
             <div id="error-message" className="ErrorMessage"></div>
             <button onClick={this.loginClick}>Login</button>
-            <button>Forgot Password?</button>
+            <button onClick={this.forgotPassword}>Forgot Password?</button>
           </form>
 
           <button onClick={this.signInAsStudent}>Sign in as Student</button>

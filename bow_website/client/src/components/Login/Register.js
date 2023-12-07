@@ -24,7 +24,7 @@ class Register extends React.Component {
 
       if (response.ok) {
         const { redirectURL } = await response.json();
-        window.location.href = `http://localhost:3000/${redirectURL}`;
+        window.location.href = `http://localhost:3000${redirectURL}`;
       } else {
         const errorParagraph = document.getElementById('errorMessage');
         errorParagraph.textContent = 'Registration failed';
