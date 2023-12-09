@@ -161,22 +161,37 @@ app.post('/logout', (req, res) => {
 const coursesSchema = require('./models/coursesSchema.js');
 const coursesData = require('./coursesData.json'); 
 
-app.get('/courses',async (req, res) => {
-    try {
-      if (req.session && req.session.user) {
-        const mongoCourses = await coursesSchema.find(); 
-    
-        if (!mongoCourses) {
-          return res.status(404).json({ message: 'No courses found' });
-        }
-        res.json(mongoCourses);
+app.get('/courses', async (req, res) => {
+  try {
+    if (req.session && req.session.user) {
+      const existingCourses = await coursesSchema.find();
+      
+      if (!existingCourses || existingCourses.length === 0) {
+        const terms = Object.keys(coursesData).map(termName => ({
+          term: termName,
+          courses: coursesData[termName].map(course => ({
+            courseName: course.courseName,
+            courseCode: course.courseCode,
+            startDate: course.startDate,
+            endDate: course.endDate,
+            tuitionFee: course.tuitionFee
+          }))
+        }));
+
+        await coursesSchema.create(terms.flat());
+        
+        const mongoCourses = await coursesSchema.find();
+        return res.json(mongoCourses);
+      }
+      
+      return res.json(existingCourses);
     } else {
       res.status(401).json({ message: 'User not authenticated' });
     }
-    } catch (error) {
-      console.error('Error retrieving courses data:', error);
-      res.status(500).send('Error retrieving courses data');
-    }
+  } catch (error) {
+    console.error('Error retrieving courses data:', error);
+    res.status(500).send('Error retrieving courses data');
+  }
 });
 
 
